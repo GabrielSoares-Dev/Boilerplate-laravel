@@ -6,27 +6,21 @@ use Src\Application\Dtos\UseCases\User\CreateUserUseCaseInputDto;
 use Src\Application\Exceptions\BusinessException;
 use Src\Application\Repositories\UserRepositoryInterface;
 use Src\Application\Services\LoggerServiceInterface;
-use Src\Application\Dtos\Repositories\User\{AssignRoleRepositoryInputDto,CreateUserRepositoryInputDto};
+use Src\Application\Dtos\Repositories\User\{AssignRoleRepositoryInputDto, CreateUserRepositoryInputDto};
 use Src\Domain\Entities\User;
+use Src\Application\Dtos\Entities\User\UserEntityDto;
 use Src\Domain\Enums\Role;
 
 class CreateUserUseCase
 {
-    protected LoggerServiceInterface $loggerService;
-
-    protected UserRepositoryInterface $repository;
-
     public function __construct(
-        LoggerServiceInterface $loggerService,
-        UserRepositoryInterface $repository
-    ) {
-        $this->loggerService = $loggerService;
-        $this->repository = $repository;
-    }
+        protected readonly LoggerServiceInterface $loggerService,
+        protected readonly UserRepositoryInterface $repository
+    ) {}
 
-    protected function valid(CreateUserUseCaseInputDto $input): void
+    protected function validate(CreateUserUseCaseInputDto $input): void
     {
-        $entity = new User(...(array) $input);
+        $entity = new User(new UserEntityDto(...(array) $input));
 
         $entity->create();
     }
@@ -49,8 +43,7 @@ class CreateUserUseCase
 
         $this->loggerService->debug('Input CreateUserUseCase', $input);
 
-        $this->valid($input);
-
+        $this->validate($input);
         $email = $input->email;
 
         if ($this->foundUserBySameEmail($email)) throw new BusinessException('User already exists');
@@ -62,6 +55,5 @@ class CreateUserUseCase
         $this->assignRole($email);
 
         $this->loggerService->info('FINISH CreateUserUseCase');
-
     }
 }

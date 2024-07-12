@@ -14,17 +14,10 @@ use Src\Infra\Http\Requests\User\UserRequest;
 
 class UserController extends Controller
 {
-    protected LoggerServiceInterface $loggerService;
-
-    protected CreateUserUseCase $createUserUseCase;
-
     public function __construct(
-        LoggerServiceInterface $loggerService,
-        CreateUserUseCase $createUserUseCase
-    ) {
-        $this->loggerService = $loggerService;
-        $this->createUserUseCase = $createUserUseCase;
-    }
+        protected readonly LoggerServiceInterface $loggerService,
+        protected readonly CreateUserUseCase $createUserUseCase
+    ) {}
 
     public function store(UserRequest $request): JsonResponse
     {
@@ -41,9 +34,7 @@ class UserController extends Controller
             $this->loggerService->info('FINISH UserController store');
 
             return BaseResponse::success('User created successfully', HttpCode::CREATED);
-
         } catch (BusinessException $exception) {
-
             $errorMessage = $exception->getMessage();
 
             $httpCode = HttpCode::INTERNAL_SERVER_ERROR;
@@ -52,7 +43,7 @@ class UserController extends Controller
 
             if ($isAlreadyExistsError) $httpCode = HttpCode::BAD_REQUEST;
 
-            $this->loggerService->error('Error UserController store', $exception);
+            $this->loggerService->error('Error UserController store', (object) ['message' => $errorMessage]);
 
             throw new HttpException($errorMessage, $httpCode);
         }
