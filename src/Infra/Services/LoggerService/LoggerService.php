@@ -7,14 +7,14 @@ use Src\Application\Services\LoggerServiceInterface;
 
 class LoggerService implements LoggerServiceInterface
 {
-    protected string $context;
+    private string $context;
 
     public function __construct()
     {
         $this->context = env('APP_NAME');
     }
 
-    protected function generateMessage(string $message): string
+    private function generateMessage(string $message): string
     {
         return "$this->context $message";
     }
