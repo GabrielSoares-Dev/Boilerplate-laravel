@@ -14,5 +14,5 @@ parameters:
         - src/Infra/Console/Commands/*
         - src/Infra/Http/Middleware/*
         - src/Infra/Http/Kernel
-        - src/Infra/Http/Kernel
+        - src/Infra/Http/Resources/*
         - src/Infra/Helpers/Authorize
